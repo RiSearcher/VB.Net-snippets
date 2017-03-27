@@ -8,6 +8,24 @@ Public Class MyDataGridView
     Inherits DataGridView
 
     '//////////////////////////////////////////////////////////////////////////////
+    ' Speed up the datagridview scrolling
+    ' For remote desktop check this thread:
+    ' http://stackoverflow.com/questions/118528/horrible-redraw-performance-of-the-datagridview-on-one-of-my-two-screens
+    Sub New()
+        MyBase.New()
+        Me.DoubleBuffered = True
+    End Sub
+    ' Switch off double buffering for row/column resize
+    Protected Overrides Sub OnMouseDown(ByVal e As System.Windows.Forms.MouseEventArgs)
+        MyBase.OnMouseDown(e)
+        If HitTest(e.X, e.Y).RowIndex = -1 OrElse HitTest(e.X, e.Y).ColumnIndex = -1 Then SetStyle(ControlStyles.OptimizedDoubleBuffer, False)
+    End Sub
+    Protected Overrides Sub OnMouseUp(ByVal e As System.Windows.Forms.MouseEventArgs)
+        MyBase.OnMouseUp(e)
+        If HitTest(e.X, e.Y).RowIndex = -1 OrElse HitTest(e.X, e.Y).ColumnIndex = -1 Then SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
+    End Sub
+
+    '//////////////////////////////////////////////////////////////////////////////
     ' Check if the cell is empty
     ' Uses MS (column, row) notation !!!
     Public ReadOnly Property IsEmpty(i As Integer, j As Integer) As Boolean
